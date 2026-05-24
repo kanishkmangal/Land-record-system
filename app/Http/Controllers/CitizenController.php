@@ -29,8 +29,47 @@ class CitizenController extends Controller
             $query->where('owner_id', $user->id);
         })->where('status', 'pending')->orderBy('due_date', 'asc')->value('due_date');
 
-        // Dummy recent activities for now
-        $recent_activities = []; 
+        // Fetch recent activities
+        $payments = Payment::where('citizen_id', $user->id)
+            ->with('propertyTax.landRecord')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($payment) {
+                return [
+                    'title' => 'Tax Payment',
+                    'date' => $payment->created_at->diffForHumans(),
+                    'description' => 'Paid $' . number_format($payment->amount_paid, 2) . ' for Record ' . ($payment->propertyTax->landRecord->record_number ?? 'N/A'),
+                    'icon' => 'payments',
+                    'timestamp' => $payment->created_at->timestamp,
+                ];
+            });
+
+        $transfers = LandTransferRequest::where('from_owner_id', $user->id)
+            ->orWhere('to_owner_id', $user->id)
+            ->with('landRecord')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($transfer) use ($user) {
+                $isSender = $transfer->from_owner_id == $user->id;
+                $status = ucfirst($transfer->status);
+                return [
+                    'title' => $isSender ? 'Transfer Sent' : 'Transfer Received',
+                    'date' => $transfer->created_at->diffForHumans(),
+                    'description' => $isSender 
+                        ? "Requested to transfer Record {$transfer->landRecord->record_number} ($status)" 
+                        : "Incoming transfer request for Record {$transfer->landRecord->record_number} ($status)",
+                    'icon' => 'swap_horiz',
+                    'timestamp' => $transfer->created_at->timestamp,
+                ];
+            });
+
+        $recent_activities = collect($payments)->concat($transfers)
+            ->sortByDesc('timestamp')
+            ->take(5)
+            ->values()
+            ->all();
 
         return Inertia::render('Citizen/Dashboard', [
             'properties_count' => $properties_count,

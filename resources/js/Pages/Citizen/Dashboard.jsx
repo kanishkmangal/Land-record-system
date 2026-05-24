@@ -73,7 +73,7 @@ export default function Dashboard({ properties_count, pending_tax, next_due_date
                             recent_activities.map((activity, index) => (
                                 <div key={index} className="bg-white border border-outline-variant rounded-lg p-4 flex gap-4">
                                     <div className="w-10 h-10 rounded bg-secondary-container flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-outlined text-on-secondary-container">check_circle</span>
+                                        <span className="material-symbols-outlined text-on-secondary-container">{activity.icon || 'check_circle'}</span>
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex justify-between">
