@@ -40,15 +40,25 @@ class CitizenController extends Controller
         ]);
     }
 
-    public function landRecords()
+    public function landRecords(Request $request)
     {
         $user = Auth::user();
-        $records = LandRecord::where('owner_id', $user->id)
-            ->latest()
-            ->paginate(10);
+        $query = LandRecord::where('owner_id', $user->id)->latest();
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('record_number', 'like', '%' . $search . '%')
+                  ->orWhere('plot_number', 'like', '%' . $search . '%')
+                  ->orWhere('survey_number', 'like', '%' . $search . '%');
+            });
+        }
+
+        $records = $query->paginate(10)->withQueryString();
 
         return Inertia::render('Citizen/LandRecords/Index', [
-            'records' => $records
+            'records' => $records,
+            'filters' => $request->only('search')
         ]);
     }
 

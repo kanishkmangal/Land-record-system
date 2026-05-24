@@ -53,7 +53,8 @@ class AdminController extends Controller
 
         $records = $query->paginate(10)->withQueryString();
         return Inertia::render('Admin/LandRecords/Index', [
-            'records' => $records
+            'records' => $records,
+            'filters' => $request->only('search')
         ]);
     }
 

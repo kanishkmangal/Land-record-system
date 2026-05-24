@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Index({ records = { data: [], links: [] } }) {
+export default function Index({ records = { data: [], links: [] }, filters }) {
     const { flash = {}, auth = {} } = usePage().props;
+    const [search, setSearch] = useState(filters?.search || '');
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            router.get(
+                route('admin.land-records.index'),
+                { search },
+                { preserveState: true, replace: true }
+            );
+        }, 300);
+        return () => clearTimeout(timeout);
+    }, [search]);
 
     const handleDelete = (id) => {
         if (confirm('Are you sure you want to delete this record?')) {
@@ -50,31 +62,21 @@ export default function Index({ records = { data: [], links: [] } }) {
 
                 {/* Search */}
                 <section className="flex flex-col gap-3 md:flex-row md:items-center">
-                    <form 
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            const search = e.target.search.value;
-                            router.get(route('admin.land-records.index'), { search }, { preserveState: true });
-                        }} 
-                        className="relative flex-grow flex items-center gap-2"
-                    >
-                        <div className="relative flex-grow">
-                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-                            <input 
-                                name="search" 
-                                defaultValue={new URLSearchParams(window.location.search).get('search') || ''}
-                                className="w-full pl-10 pr-4 py-2 bg-white border border-outline-variant rounded-lg text-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm" 
-                                placeholder="Search by Record ID, Plot Number, or Owner Name" 
-                                type="text"
-                            />
-                        </div>
-                        <button type="submit" className="bg-surface-container-high border border-outline-variant text-on-surface px-4 py-2 rounded-lg font-label-md hover:bg-surface-container-highest transition-colors">
-                            Search
-                        </button>
-                        {new URLSearchParams(window.location.search).get('search') && (
-                            <Link href={route('admin.land-records.index')} className="text-error hover:underline font-label-sm px-2">Clear</Link>
+                    <div className="relative flex-grow">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+                        <input 
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-10 py-2 bg-white border border-outline-variant rounded-lg text-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm" 
+                            placeholder="Search by Record ID, Plot Number, or Owner Name" 
+                            type="text"
+                        />
+                        {search && (
+                            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-error hover:text-error/80 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[20px]">close</span>
+                            </button>
                         )}
-                    </form>
+                    </div>
                 </section>
 
                 {/* Records Table */}

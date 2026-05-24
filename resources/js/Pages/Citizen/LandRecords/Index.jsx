@@ -1,9 +1,21 @@
-import React from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
 import CitizenLayout from '@/Layouts/CitizenLayout';
 
-export default function Index({ records }) {
+export default function Index({ records, filters }) {
     const { auth } = usePage().props;
+    const [search, setSearch] = useState(filters?.search || '');
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            router.get(
+                route('citizen.land-records.index'),
+                { search },
+                { preserveState: true, replace: true }
+            );
+        }, 300);
+        return () => clearTimeout(timeout);
+    }, [search]);
 
     const statusColors = {
         active: 'bg-secondary-container text-on-secondary-container',
@@ -30,8 +42,10 @@ export default function Index({ records }) {
                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary-container">search</span>
                             <input 
                                 className="w-full h-[48px] pl-12 pr-4 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary-container focus:border-primary-container outline-none font-body-md transition-all shadow-sm" 
-                                placeholder="Search by Record ID or Plot Number" 
+                                placeholder="Search by Record ID, Plot, or Survey Number" 
                                 type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
                     </div>
