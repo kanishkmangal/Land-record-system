@@ -5,17 +5,18 @@ import CitizenLayout from '@/Layouts/CitizenLayout';
 export default function Index({ records, filters }) {
     const { auth } = usePage().props;
     const [search, setSearch] = useState(filters?.search || '');
+    const [status, setStatus] = useState(filters?.status || 'all');
 
     useEffect(() => {
         const timeout = setTimeout(() => {
             router.get(
                 route('citizen.land-records.index'),
-                { search },
+                { search, status },
                 { preserveState: true, replace: true }
             );
         }, 300);
         return () => clearTimeout(timeout);
-    }, [search]);
+    }, [search, status]);
 
     const statusColors = {
         active: 'bg-secondary-container text-on-secondary-container',
@@ -54,14 +55,23 @@ export default function Index({ records, filters }) {
                 {/* Quick Filters */}
                 <section className="mb-gutter overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
                     <div className="flex gap-sm">
-                        <button className="flex items-center gap-xs px-4 py-2 bg-primary-container text-white rounded-full font-label-md whitespace-nowrap shadow-sm">
+                        <button 
+                            onClick={() => setStatus('all')}
+                            className={`flex items-center gap-xs px-4 py-2 rounded-full font-label-md whitespace-nowrap transition-colors ${status === 'all' ? 'bg-primary-container text-white shadow-sm' : 'bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container-low'}`}
+                        >
                             <span className="material-symbols-outlined text-[18px]">tune</span>
                             All Records
                         </button>
-                        <button className="flex items-center gap-xs px-4 py-2 bg-white border border-outline-variant text-on-surface-variant rounded-full font-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">
+                        <button 
+                            onClick={() => setStatus('active')}
+                            className={`flex items-center gap-xs px-4 py-2 rounded-full font-label-md whitespace-nowrap transition-colors ${status === 'active' ? 'bg-secondary-container text-on-secondary-container shadow-sm border-secondary-container' : 'bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container-low'}`}
+                        >
                             Verified
                         </button>
-                        <button className="flex items-center gap-xs px-4 py-2 bg-white border border-outline-variant text-on-surface-variant rounded-full font-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">
+                        <button 
+                            onClick={() => setStatus('pending')}
+                            className={`flex items-center gap-xs px-4 py-2 rounded-full font-label-md whitespace-nowrap transition-colors ${status === 'pending' ? 'bg-error-container text-on-error-container shadow-sm border-error-container' : 'bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container-low'}`}
+                        >
                             Pending
                         </button>
                     </div>
@@ -82,12 +92,19 @@ export default function Index({ records, filters }) {
                                         <p className="font-label-sm text-outline uppercase tracking-wider mb-xs">Record Number</p>
                                         <h3 className="font-h3 text-primary">{record.record_number}</h3>
                                     </div>
-                                    <span className={`px-3 py-1 ${statusColors[record.status] || 'bg-surface-container'} rounded-full font-label-sm flex items-center gap-1`}>
-                                        <span className="material-symbols-outlined text-[14px]" style={{fontVariationSettings: "'FILL' 1"}}>
-                                            {statusIcons[record.status] || 'info'}
+                                    {record.transfer_requests && record.transfer_requests.length > 0 ? (
+                                        <span className="px-3 py-1 bg-error-container text-on-error-container rounded-full font-label-sm flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-[14px]" style={{fontVariationSettings: "'FILL' 1"}}>pending_actions</span>
+                                            Pending Transfer
                                         </span>
-                                        {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                                    </span>
+                                    ) : (
+                                        <span className={`px-3 py-1 ${statusColors[record.status] || 'bg-surface-container'} rounded-full font-label-sm flex items-center gap-1`}>
+                                            <span className="material-symbols-outlined text-[14px]" style={{fontVariationSettings: "'FILL' 1"}}>
+                                                {statusIcons[record.status] || 'info'}
+                                            </span>
+                                            {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="grid grid-cols-2 gap-md py-base border-y border-outline-variant/30 my-base">
                                     <div>

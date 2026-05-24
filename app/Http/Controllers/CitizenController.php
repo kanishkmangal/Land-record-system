@@ -43,7 +43,11 @@ class CitizenController extends Controller
     public function landRecords(Request $request)
     {
         $user = Auth::user();
-        $query = LandRecord::where('owner_id', $user->id)->latest();
+        $query = LandRecord::where('owner_id', $user->id)
+            ->with(['transferRequests' => function($q) {
+                $q->where('status', 'pending');
+            }])
+            ->latest();
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
@@ -53,12 +57,22 @@ class CitizenController extends Controller
                   ->orWhere('survey_number', 'like', '%' . $search . '%');
             });
         }
+        
+        if ($request->has('status') && $request->status != '' && $request->status != 'all') {
+            if ($request->status === 'pending') {
+                $query->whereHas('transferRequests', function($q) {
+                    $q->where('status', 'pending');
+                });
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
 
         $records = $query->paginate(10)->withQueryString();
 
         return Inertia::render('Citizen/LandRecords/Index', [
             'records' => $records,
-            'filters' => $request->only('search')
+            'filters' => $request->only(['search', 'status'])
         ]);
     }
 

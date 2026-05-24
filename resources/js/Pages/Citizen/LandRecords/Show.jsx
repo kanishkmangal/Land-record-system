@@ -10,6 +10,14 @@ export default function Show({ record, latest_tax, pending_transfer }) {
             <Head title={`Record ${record.record_number}`} />
             
             <main className="max-w-md mx-auto px-4 pt-md space-y-md mb-24 mt-6">
+                {/* Back Button */}
+                <div className="flex items-center mb-2">
+                    <Link href={route('citizen.land-records.index')} className="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-label-md bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant/50 shadow-sm">
+                        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                        Back to Land Records
+                    </Link>
+                </div>
+
                 {/* Quick Status Indicator */}
                 <div className={`flex items-center justify-between py-xs px-sm ${record.status === 'active' ? 'bg-secondary-container/30 border-secondary-container' : 'bg-error-container/30 border-error-container'} border rounded-lg`}>
                     <div className="flex items-center gap-2">

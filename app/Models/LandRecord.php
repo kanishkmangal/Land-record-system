@@ -35,4 +35,9 @@ class LandRecord extends Model
     {
         return $this->hasMany(PropertyTax::class);
     }
+
+    public function transferRequests()
+    {
+        return $this->hasMany(LandTransferRequest::class);
+    }
 }
