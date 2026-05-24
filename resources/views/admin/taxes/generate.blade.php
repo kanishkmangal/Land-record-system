@@ -24,7 +24,7 @@
         <span class="material-symbols-outlined text-primary mt-0.5">info</span>
         <div>
             <h4 class="font-label-md">How this works</h4>
-            <p class="font-body-sm text-on-surface-variant mt-1">This will automatically generate a pending property tax bill for <strong>every active land record</strong> in the system that doesn't already have a bill for the specified financial year.</p>
+            <p class="font-body-sm text-on-surface-variant mt-1">This will automatically generate a pending property tax bill for <strong>every active land record</strong> in the system. The tax amount is dynamically calculated based on the land type (Residential, Commercial, Agricultural, Industrial) and area in SqFt.</p>
         </div>
     </div>
 
@@ -37,11 +37,6 @@
                 <div class="md:col-span-2">
                     <label class="block font-label-md text-on-surface-variant mb-1">Financial Year</label>
                     <input name="financial_year" required value="{{ old('financial_year') ?? (date('Y') . '-' . (date('Y') + 1)) }}" class="w-full h-11 px-4 rounded-lg border border-outline-variant focus:border-2 focus:border-primary-container outline-none transition-all font-body-md" placeholder="e.g. 2024-2025" type="text"/>
-                </div>
-
-                <div>
-                    <label class="block font-label-md text-on-surface-variant mb-1">Base Amount ($)</label>
-                    <input name="base_amount" required value="{{ old('base_amount') ?? '500.00' }}" class="w-full h-11 px-4 rounded-lg border border-outline-variant focus:border-2 focus:border-primary-container outline-none transition-all font-body-md" type="number" step="0.01" min="0"/>
                 </div>
 
                 <div>

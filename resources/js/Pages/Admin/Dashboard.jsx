@@ -81,7 +81,7 @@ export default function Dashboard({ total_users, total_land_records, total_tax_c
                                         <p className="text-[10px] text-on-surface-variant uppercase">Pending Actions</p>
                                     </div>
                                 </div>
-                                <button className="bg-primary text-white text-[12px] px-3 py-1 rounded-sm font-semibold">START</button>
+                                <a href={route('admin.transfers.index')} className="bg-primary text-white text-[12px] px-3 py-1 rounded-sm font-semibold hover:opacity-90 transition-opacity text-center">START</a>
                             </div>
                             <div className="flex items-center justify-between p-3 border border-outline-variant/30 rounded-lg">
                                 <div className="flex items-center gap-3">
@@ -94,7 +94,7 @@ export default function Dashboard({ total_users, total_land_records, total_tax_c
                                 <span className="material-symbols-outlined text-outline cursor-pointer">more_vert</span>
                             </div>
                         </div>
-                        <button className="mt-auto w-full border border-primary text-primary py-2 rounded-sm font-label-md hover:bg-primary-fixed transition-colors">VIEW ALL TASKS</button>
+                        <a href={route('admin.transfers.index')} className="mt-auto w-full border border-primary text-primary py-2 rounded-sm font-label-md hover:bg-primary-fixed transition-colors block text-center">VIEW ALL TASKS</a>
                     </div>
                 </div>
 

@@ -139,6 +139,11 @@ class CitizenController extends Controller
         $user = Auth::user();
         $record = LandRecord::where('owner_id', $user->id)->findOrFail($id);
         
+        if ($record->propertyTaxes()->where('status', 'pending')->exists()) {
+            return redirect()->route('citizen.land-records.show', $id)
+                ->with('error', 'You must pay all pending taxes before transferring this property.');
+        }
+
         return Inertia::render('Citizen/LandRecords/Transfer', [
             'record' => $record
         ]);
@@ -157,6 +162,11 @@ class CitizenController extends Controller
 
         $user = Auth::user();
         $record = LandRecord::where('owner_id', $user->id)->findOrFail($id);
+
+        if ($record->propertyTaxes()->where('status', 'pending')->exists()) {
+            return redirect()->route('citizen.land-records.show', $id)
+                ->with('error', 'You must pay all pending taxes before transferring this property.');
+        }
 
         // Find or create a dummy user for the transferee so the foreign key constraint passes
         $transferee = User::firstOrCreate(

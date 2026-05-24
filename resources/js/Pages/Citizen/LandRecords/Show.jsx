@@ -96,8 +96,10 @@ export default function Show({ record, latest_tax, pending_transfer }) {
                                 </div>
                                 {latest_tax.status === 'pending' && (
                                     <Link 
-                                        href={route('citizen.tax.payment', latest_tax.id)} 
-                                        className="mt-3 bg-white text-primary-container text-center font-label-sm py-1.5 rounded-lg hover:bg-surface-container transition-colors shadow-sm"
+                                        href={route('citizen.tax.process', latest_tax.id)} 
+                                        method="post"
+                                        as="button"
+                                        className="mt-3 w-full bg-white text-primary-container text-center font-label-sm py-1.5 rounded-lg hover:bg-surface-container transition-colors shadow-sm block"
                                     >
                                         Pay Tax Now
                                     </Link>
@@ -140,6 +142,20 @@ export default function Show({ record, latest_tax, pending_transfer }) {
                             <p className="text-sm text-on-surface-variant">
                                 You have already submitted a transfer request for this property which is currently pending review.
                             </p>
+                        </div>
+                    ) : latest_tax && latest_tax.status === 'pending' ? (
+                        <div className="w-full bg-error-container/20 border border-error-container/50 text-on-surface p-4 rounded-lg shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="material-symbols-outlined text-error text-[20px]">warning</span>
+                                <span className="font-label-md font-bold text-error">Clear Dues to Transfer</span>
+                            </div>
+                            <p className="text-sm text-on-surface-variant mb-3">
+                                Ownership transfer is disabled because there are pending tax dues on this property. Please pay the tax first.
+                            </p>
+                            <button disabled className="w-full h-11 bg-surface-container-high text-on-surface-variant/50 font-label-md flex items-center justify-center gap-2 rounded-lg cursor-not-allowed border border-outline-variant/30">
+                                <span className="material-symbols-outlined text-[20px]">swap_horiz</span>
+                                Apply for Ownership Transfer
+                            </button>
                         </div>
                     ) : (
                         <Link 

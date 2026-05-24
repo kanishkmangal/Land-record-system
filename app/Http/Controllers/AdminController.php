@@ -86,9 +86,22 @@ class AdminController extends Controller
         $validated['document_path'] = $documentPath;
         unset($validated['document']);
 
-        LandRecord::create($validated);
+        $landRecord = LandRecord::create($validated);
 
-        return redirect()->route('admin.land-records.index')->with('success', 'Land record created successfully.');
+        $taxAmount = $this->calculateTaxAmount($landRecord->land_type, $landRecord->area_sqft);
+
+        // Auto-generate initial tax
+        PropertyTax::create([
+            'land_record_id' => $landRecord->id,
+            'financial_year' => date('Y') . '-' . (date('Y') + 1),
+            'base_amount' => $taxAmount,
+            'penalty_amount' => 0.00,
+            'total_amount' => $taxAmount,
+            'due_date' => now()->addDays(30)->format('Y-m-d'),
+            'status' => 'pending'
+        ]);
+
+        return redirect()->route('admin.land-records.index')->with('success', 'Land record created successfully and initial tax generated.');
     }
 
     public function editLandRecord($id)
@@ -203,7 +216,6 @@ class AdminController extends Controller
     {
         $request->validate([
             'financial_year' => 'required|string',
-            'base_amount' => 'required|numeric|min:0',
             'penalty_amount' => 'required|numeric|min:0',
             'due_date' => 'required|date',
         ]);
@@ -212,6 +224,8 @@ class AdminController extends Controller
         $generatedCount = 0;
 
         foreach ($activeRecords as $record) {
+            $taxAmount = $this->calculateTaxAmount($record->land_type, $record->area_sqft);
+
             // Only create if tax for this year doesn't already exist for this record
             $tax = PropertyTax::firstOrCreate(
                 [
@@ -219,9 +233,9 @@ class AdminController extends Controller
                     'financial_year' => $request->financial_year
                 ],
                 [
-                    'base_amount' => $request->base_amount,
+                    'base_amount' => $taxAmount,
                     'penalty_amount' => $request->penalty_amount,
-                    'total_amount' => $request->base_amount + $request->penalty_amount,
+                    'total_amount' => $taxAmount + $request->penalty_amount,
                     'due_date' => $request->due_date,
                     'status' => 'pending'
                 ]
@@ -307,7 +321,20 @@ class AdminController extends Controller
             'approved_by' => auth()->id()
         ]);
 
-        return redirect()->route('admin.transfers.index')->with('success', 'Transfer request approved successfully. Ownership updated.');
+        $taxAmount = $this->calculateTaxAmount($landRecord->land_type, $landRecord->area_sqft);
+
+        // Generate a transfer tax / initial tax for the new owner
+        PropertyTax::create([
+            'land_record_id' => $landRecord->id,
+            'financial_year' => date('Y') . '-' . (date('Y') + 1),
+            'base_amount' => $taxAmount,
+            'penalty_amount' => 0.00,
+            'total_amount' => $taxAmount,
+            'due_date' => now()->addDays(30)->format('Y-m-d'),
+            'status' => 'pending'
+        ]);
+
+        return redirect()->route('admin.transfers.index')->with('success', 'Transfer request approved successfully. Ownership updated and transfer tax generated.');
     }
 
     public function rejectTransfer(Request $request, $id)
@@ -325,5 +352,27 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.transfers.index')->with('success', 'Transfer request rejected.');
+    }
+
+    private function calculateTaxAmount($landType, $areaSqft)
+    {
+        $rate = 0;
+        switch (strtolower($landType)) {
+            case 'residential':
+                $rate = 80;
+                break;
+            case 'commercial':
+                $rate = 90;
+                break;
+            case 'agricultural':
+                $rate = 50;
+                break;
+            case 'industrial':
+                $rate = 120;
+                break;
+            default:
+                $rate = 0;
+        }
+        return ($areaSqft / 100) * $rate;
     }
 }
