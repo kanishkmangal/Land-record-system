@@ -3,7 +3,16 @@
         <button class="hover:bg-white/10 p-2 rounded-lg transition-colors">
             <span class="material-symbols-outlined" data-icon="menu">menu</span>
         </button>
-        <a href="{{ route('dashboard') }}" class="text-white font-bold tracking-tight">Land Records Portal</a>
+        <a href="{{ route('dashboard') }}" class="text-white font-bold tracking-tight mr-4">Admin Portal</a>
+        
+        @if(auth()->check() && auth()->user()->role === 'admin')
+        <nav class="hidden md:flex items-center gap-1">
+            <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 rounded-lg font-label-md transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">Dashboard</a>
+            <a href="{{ route('admin.land-records.index') }}" class="px-3 py-1 rounded-lg font-label-md transition-colors {{ request()->routeIs('admin.land-records.*') ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">Land Records</a>
+            <a href="{{ route('admin.taxes.index') }}" class="px-3 py-1 rounded-lg font-label-md transition-colors {{ request()->routeIs('admin.taxes.*') ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">Taxes</a>
+            <a href="{{ route('admin.transfers.index') }}" class="px-3 py-1 rounded-lg font-label-md transition-colors {{ request()->routeIs('admin.transfers.*') ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">Transfers</a>
+        </nav>
+        @endif
     </div>
     <div class="flex items-center gap-4">
         @auth

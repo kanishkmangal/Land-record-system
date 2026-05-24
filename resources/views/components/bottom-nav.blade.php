@@ -1,4 +1,4 @@
-<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 bg-white dark:bg-slate-900 z-50 border-t border-gray-200 dark:border-slate-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] font-public-sans text-[11px] font-medium">
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 bg-white dark:bg-slate-900 z-50 border-t border-gray-200 dark:border-slate-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] font-public-sans text-[11px] font-medium md:hidden">
     @if(auth()->check() && auth()->user()->role == 'admin')
         <a class="flex flex-col items-center justify-center text-[#002D62] dark:text-blue-400 font-bold scale-95 active:scale-90 transition-transform" href="{{ route('admin.dashboard') }}">
             <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>

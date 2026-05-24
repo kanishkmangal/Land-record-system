@@ -8,10 +8,10 @@ export default function AdminLayout({ children }) {
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     const navLinks = [
-        { name: 'Dashboard', href: route('admin.dashboard'), icon: 'dashboard', active: route().current('admin.dashboard') },
-        { name: 'Land Records', href: route('admin.land-records.index'), icon: 'domain', active: route().current('admin.land-records.*') },
-        { name: 'Taxes', href: route('admin.taxes.index'), icon: 'payments', active: route().current('admin.taxes.*') },
-        { name: 'Transfers', href: route('admin.transfers.index'), icon: 'swap_horiz', active: route().current('admin.transfers.*') },
+        { name: 'Dashboard', href: route('admin.dashboard'), icon: 'dashboard', active: route().current('admin.dashboard'), isReact: true },
+        { name: 'Land Records', href: route('admin.land-records.index'), icon: 'domain', active: route().current('admin.land-records.*'), isReact: true },
+        { name: 'Taxes', href: route('admin.taxes.index'), icon: 'payments', active: route().current('admin.taxes.*'), isReact: false },
+        { name: 'Transfers', href: route('admin.transfers.index'), icon: 'swap_horiz', active: route().current('admin.transfers.*'), isReact: false },
     ];
 
     return (
@@ -26,13 +26,23 @@ export default function AdminLayout({ children }) {
                     
                     <nav className="hidden md:flex items-center gap-1">
                         {navLinks.map((link) => (
-                            <Link 
-                                key={link.name}
-                                href={link.href} 
-                                className={`px-3 py-1 rounded-lg font-label-md transition-colors ${link.active ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
-                            >
-                                {link.name}
-                            </Link>
+                            link.isReact ? (
+                                <Link 
+                                    key={link.name}
+                                    href={link.href} 
+                                    className={`px-3 py-1 rounded-lg font-label-md transition-colors ${link.active ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+                                >
+                                    {link.name}
+                                </Link>
+                            ) : (
+                                <a 
+                                    key={link.name}
+                                    href={link.href} 
+                                    className={`px-3 py-1 rounded-lg font-label-md transition-colors ${link.active ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+                                >
+                                    {link.name}
+                                </a>
+                            )
                         ))}
                     </nav>
                 </div>
@@ -77,15 +87,27 @@ export default function AdminLayout({ children }) {
                 </div>
                 <nav className="p-4 space-y-2">
                     {navLinks.map((link) => (
-                        <Link 
-                            key={link.name}
-                            href={link.href} 
-                            onClick={() => setIsSidebarOpen(false)}
-                            className={`flex items-center gap-3 p-3 rounded-xl font-label-md transition-all ${link.active ? 'bg-primary-container text-white shadow-md' : 'text-on-surface-variant hover:bg-surface-container-low'}`}
-                        >
-                            <span className="material-symbols-outlined">{link.icon}</span>
-                            {link.name}
-                        </Link>
+                        link.isReact ? (
+                            <Link 
+                                key={link.name}
+                                href={link.href} 
+                                onClick={() => setIsSidebarOpen(false)}
+                                className={`flex items-center gap-3 p-3 rounded-xl font-label-md transition-all ${link.active ? 'bg-primary-container text-white shadow-md' : 'text-on-surface-variant hover:bg-surface-container-low'}`}
+                            >
+                                <span className="material-symbols-outlined">{link.icon}</span>
+                                {link.name}
+                            </Link>
+                        ) : (
+                            <a 
+                                key={link.name}
+                                href={link.href} 
+                                onClick={() => setIsSidebarOpen(false)}
+                                className={`flex items-center gap-3 p-3 rounded-xl font-label-md transition-all ${link.active ? 'bg-primary-container text-white shadow-md' : 'text-on-surface-variant hover:bg-surface-container-low'}`}
+                            >
+                                <span className="material-symbols-outlined">{link.icon}</span>
+                                {link.name}
+                            </a>
+                        )
                     ))}
                     <div className="pt-4 mt-4 border-t border-outline-variant">
                         <Link 
@@ -111,14 +133,25 @@ export default function AdminLayout({ children }) {
             {/* Bottom Nav (Mobile Only) */}
             <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-outline-variant h-16 flex justify-around items-center px-2 z-50 md:hidden shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
                 {navLinks.map((link) => (
-                    <Link 
-                        key={link.name}
-                        href={link.href} 
-                        className={`flex flex-col items-center gap-1 transition-all ${link.active ? 'text-primary-container scale-105' : 'text-on-surface-variant opacity-70 hover:opacity-100'}`}
-                    >
-                        <span className="material-symbols-outlined">{link.icon}</span>
-                        <span className="text-[10px] font-bold uppercase">{link.name.split(' ')[0]}</span>
-                    </Link>
+                    link.isReact ? (
+                        <Link 
+                            key={link.name}
+                            href={link.href} 
+                            className={`flex flex-col items-center gap-1 transition-all ${link.active ? 'text-primary-container scale-105' : 'text-on-surface-variant opacity-70 hover:opacity-100'}`}
+                        >
+                            <span className="material-symbols-outlined">{link.icon}</span>
+                            <span className="text-[10px] font-bold uppercase">{link.name.split(' ')[0]}</span>
+                        </Link>
+                    ) : (
+                        <a 
+                            key={link.name}
+                            href={link.href} 
+                            className={`flex flex-col items-center gap-1 transition-all ${link.active ? 'text-primary-container scale-105' : 'text-on-surface-variant opacity-70 hover:opacity-100'}`}
+                        >
+                            <span className="material-symbols-outlined">{link.icon}</span>
+                            <span className="text-[10px] font-bold uppercase">{link.name.split(' ')[0]}</span>
+                        </a>
+                    )
                 ))}
             </nav>
         </div>
